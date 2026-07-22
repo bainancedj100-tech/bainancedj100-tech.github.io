@@ -93,16 +93,18 @@ body {
     min-height: 100vh;
 }
 
-#app-wrapper.app-mode {
-    max-width: 430px;
-    margin: 2rem auto;
-    border-radius: 44px;
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4), 0 0 0 12px #1e293b;
-    overflow: hidden;
-    position: relative;
-    background-color: var(--bg-main);
-    min-height: 860px;
-    border: 1px solid var(--border-color);
+#app-wrapper.native-app {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    min-height: 100vh !important;
+    border: none !important;
+}
+
+#app-wrapper.native-app .mobile-device-bar {
+    display: none !important;
 }
 
 .mobile-device-bar {

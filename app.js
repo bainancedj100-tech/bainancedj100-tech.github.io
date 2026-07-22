@@ -392,12 +392,34 @@ let currentSelectedDoctorId = null;
 
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
+    checkPlatformAndSetMode();
     renderSpecialtyChips();
     populateSelectOptions();
     renderDoctors(doctorsData);
     setupEventListeners();
     initSupabase();
 });
+
+function checkPlatformAndSetMode() {
+    const isCapacitor = (
+        window.Capacitor?.isNativePlatform?.() ||
+        window.Capacitor?.platform === 'android' ||
+        window.Capacitor?.platform === 'ios' ||
+        window.location.protocol === 'capacitor:' ||
+        window.location.protocol === 'file:' ||
+        /Capacitor/i.test(navigator.userAgent)
+    );
+
+    if (isCapacitor) {
+        const wrapper = document.getElementById('app-wrapper');
+        if (wrapper) {
+            wrapper.className = 'app-mode native-app';
+        }
+        // Hide view mode toggle buttons inside APK so it stays exclusively in mobile app mode
+        const modeToggle = document.querySelector('.view-mode-toggle');
+        if (modeToggle) modeToggle.style.display = 'none';
+    }
+}
 
 function renderSpecialtyChips() {
     const container = document.getElementById('specialties-chips-container');
