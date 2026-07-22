@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة الحكيم | دليل وحجز الأطباء والعيادات الخاصة</title>
+    <meta name="description" content="منصة وتطبيق الحكيم للعثور على أفضل الأطباء والعيادات الخاصة، معرفة التخصصات، الموقع، سعر الفحص، وآراء المرضى مع إمكانية الحجز والإلغاء المباشر عبر Supabase.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Supabase JS Client SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="light-theme">
+
+    <!-- Wrapper for Device Frame Toggle -->
+    <div id="app-wrapper" class="web-mode">
+        
+        <!-- Mobile Frame Header (Visible only in Mobile App Mode) -->
+        <div class="mobile-device-bar">
+            <div class="device-speaker"></div>
+            <div class="device-camera"></div>
+        </div>
+
+        <!-- MAIN HEADER / NAVBAR -->
+        <header class="navbar">
+            <div class="container nav-container">
+                <a href="#" class="brand-logo">
+                    <div class="logo-icon">
+                        <i class="fa-solid fa-user-md"></i>
+                    </div>
+                    <div class="logo-text">
+                        <span class="brand-name">الحكيم</span>
+                        <span class="brand-tagline">منصة الأطباء والعيادات</span>
+                    </div>
+                </a>
+
+                <div class="nav-actions">
+                    <!-- My Appointments Button -->
+                    <button class="btn btn-outline" id="btn-open-my-appointments" style="padding:6px 12px">
+                        <i class="fa-solid fa-calendar-check"></i> <span class="hide-mobile">مواعيدي (<span id="appointments-badge-count">0</span>)</span>
+                    </button>
+
+                    <!-- Supabase Connection Badge -->
+                    <button class="btn btn-outline" id="btn-supabase-status" style="padding:4px 10px; font-size:0.8rem">
+                        <i class="fa-solid fa-database"></i> <span id="supabase-status-text">Supabase متصل</span>
+                    </button>
+
+                    <!-- Mode Switcher (Web vs App) -->
+                    <div class="view-mode-toggle">
+                        <button id="btn-web-mode" class="mode-btn active" title="عرض كـ موقع إلكتروني">
+                            <i class="fa-solid fa-desktop"></i> <span class="hide-mobile">موقع</span>
+                        </button>
+                        <button id="btn-app-mode" class="mode-btn" title="عرض كـ تطبيق جوال">
+                            <i class="fa-solid fa-mobile-screen-button"></i> <span class="hide-mobile">تطبيق</span>
+                        </button>
+                    </div>
+
+                    <!-- Dark Mode Toggle -->
+                    <button id="theme-toggle-btn" class="icon-circle-btn" title="تغيير المظهر">
+                        <i class="fa-solid fa-moon"></i>
+                    </button>
+
+                    <!-- Add Doctor Button -->
+                    <button class="btn btn-outline" id="btn-open-doctor-register">
+                        <i class="fa-solid fa-plus-circle"></i> <span class="hide-mobile">انضم كطبيب</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- HERO SECTION -->
+        <section class="hero-section">
+            <div class="hero-bg-shapes">
+                <div class="shape shape-1"></div>
+                <div class="shape shape-2"></div>
+            </div>
+            <div class="container hero-container">
+                <div class="hero-badge">
+                    <i class="fa-solid fa-shield-halved"></i> المنصة الأولى الموثوقة لحجز وإلغاء الأطباء والعيادات
+                </div>
+                <h1 class="hero-title">إعثر على أفضل الأطباء والعيادات بكل سهولة</h1>
+                <p class="hero-subtitle">استعرض التخصصات الطبية، قارن أسعار الكشفية، شاهد تقييمات وآراء المرضى، واحجز أو ألغِ موعدك فوراً عبر Supabase.</p>
+
+                <!-- Search Bar Box -->
+                <div class="hero-search-box">
+                    <div class="search-field">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input type="text" id="main-search-input" placeholder="ابحث باسم الطبيب، المستشفى أو العيادة...">
+                    </div>
+                    <div class="search-field">
+                        <i class="fa-solid fa-stethoscope search-icon"></i>
+                        <select id="hero-specialty-select">
+                            <option value="">جميع التخصصات الطبية</option>
+                            <option value="طب عام">طب عام وشامل</option>
+                            <option value="طب الأطفال">طب الأطفال وحديثي الولادة</option>
+                            <option value="جراحة العظام">جراحة العظام والمفاصل</option>
+                            <option value="طب الأسنان">طب وجراحة الأسنان</option>
+                            <option value="طب وجراحة العيون">طب وجراحة العيون</option>
+                            <option value="الأمراض الجلدية">الأمراض الجلدية والتجميل</option>
+                            <option value="أمراض القلب">أمراض القلب والأوعية الدموية</option>
+                            <option value="النساء والتوليد">أمراض النساء والتوليد</option>
+                            <option value="الأنف والأذن والحنجرة">الأنف والأذن والحنجرة</option>
+                        </select>
+                    </div>
+                    <div class="search-field">
+                        <i class="fa-solid fa-location-dot search-icon"></i>
+                        <select id="hero-city-select">
+                            <option value="">جميع المدن والمواقع</option>
+                            <option value="الجزائر العاصمة">الجزائر العاصمة</option>
+                            <option value="وهران">وهران</option>
+                            <option value="قسنطينة">قسنطينة</option>
+                            <option value="عنابة">عنابة</option>
+                            <option value="الرياض">الرياض</option>
+                            <option value="جدة">جدة</option>
+                            <option value="القاهرة">القاهرة</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary btn-search-trigger" id="btn-hero-search">
+                        <i class="fa-solid fa-search"></i> بحث
+                    </button>
+                </div>
+
+                <!-- Stats counter -->
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">+1,200</span>
+                        <span class="stat-label">طبيب موثوق</span>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                        <span class="stat-number">+45,000</span>
+                        <span class="stat-label">حجز ناجح</span>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                        <span class="stat-number">4.9 ★</span>
+                        <span class="stat-label">تقييم المرضى</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SPECIALTIES QUICK CAROUSEL -->
+        <section class="specialties-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">التخصصات الطبية الأكثر طلباً</h2>
+                    <p class="section-desc">اختر التخصص الطبي لعرض قائمة الأطباء المتاحين للكشف اليوم</p>
+                </div>
+                
+                <div class="specialties-grid" id="specialties-chips-container">
+                    <!-- Dynamic Specialty Chips Inserted by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- MAIN DIRECTORY SECTION (FILTERS & DOCTOR LIST) -->
+        <section class="directory-section" id="doctors-directory">
+            <div class="container">
+                
+                <!-- Filter Bar -->
+                <div class="filter-card">
+                    <div class="filter-card-header">
+                        <h3><i class="fa-solid fa-sliders"></i> تصفية نتائج البحث (<span id="results-count">0</span> طبيب)</h3>
+                        <button id="btn-reset-filters" class="btn-text"><i class="fa-solid fa-rotate-left"></i> إعادة ضبط</button>
+                    </div>
+                    
+                    <div class="filter-grid">
+                        <!-- Specialty filter -->
+                        <div class="filter-group">
+                            <label>التخصص الطبي</label>
+                            <select id="filter-specialty" class="form-control">
+                                <option value="">كل التخصصات</option>
+                            </select>
+                        </div>
+
+                        <!-- Location Filter -->
+                        <div class="filter-group">
+                            <label>المدينة / المنطقة</label>
+                            <select id="filter-city" class="form-control">
+                                <option value="">كل المدن</option>
+                            </select>
+                        </div>
+
+                        <!-- Price Slider -->
+                        <div class="filter-group">
+                            <label>الحد الأقصى لسعر المعاينة: <span id="price-limit-display" class="price-highlight">10,000 د.ج</span></label>
+                            <input type="range" id="filter-max-price" min="1000" max="10000" step="500" value="10000" class="range-slider">
+                        </div>
+
+                        <!-- Min Rating -->
+                        <div class="filter-group">
+                            <label>الحد الأدنى لتقييم المرضى</label>
+                            <select id="filter-rating" class="form-control">
+                                <option value="0">الكل (جميع التقييمات)</option>
+                                <option value="4.5">★ 4.5 فما فوق (ممتاز جداً)</option>
+                                <option value="4.0">★ 4.0 فما فوق (جيد جداً)</option>
+                                <option value="3.5">★ 3.5 فما فوق</option>
+                            </select>
+                        </div>
+
+                        <!-- Sort By -->
+                        <div class="filter-group">
+                            <label>ترتيب النتائج حسب</label>
+                            <select id="filter-sort" class="form-control">
+                                <option value="recommended">الأوصى به (الأعلى تقييماً)</option>
+                                <option value="price-asc">سعر الكشف: من الأقل للأعلى</option>
+                                <option value="price-desc">سعر الكشف: من الأعلى للأقل</option>
+                                <option value="experience">سنوات الخبرة الأكبر</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DOCTORS LIST GRID -->
+                <div class="doctors-grid-container" id="doctors-grid">
+                    <!-- Doctor Cards will be rendered here dynamically -->
+                </div>
+
+                <!-- Empty State Message -->
+                <div id="empty-state" class="empty-state hidden">
+                    <div class="empty-icon"><i class="fa-solid fa-user-doctor"></i></div>
+                    <h3>لم يتم العثور على أطباء يطابقون شروط البحث</h3>
+                    <p>جرب تغيير شروط التصفية أو زيادة نطاق سعر الكشف أو اختيار مدينة أخرى.</p>
+                    <button class="btn btn-primary" onclick="resetAllFilters()">إعادة ضبط البحث</button>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="main-footer">
+            <div class="container footer-container">
+                <div class="footer-col brand-col">
+                    <div class="brand-logo">
+                        <div class="logo-icon"><i class="fa-solid fa-user-md"></i></div>
+                        <span class="brand-name">منصة الحكيم</span>
+                    </div>
+                    <p class="footer-text">المنصة الرائدة والخيارات الأولى للبحث عن الأطباء، العيادات، الاستشارات الطبية، ومعرفة أسعار الكشف وآراء المرضى بمنتهى الشفافية.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>روابط سريعة</h4>
+                    <ul>
+                        <li><a href="#doctors-directory">قائمة الأطباء</a></li>
+                        <li><a href="#" id="btn-footer-my-appointments">سجل مواعيدي</a></li>
+                        <li><a href="#" id="link-join">انضمام الأطباء</a></li>
+                        <li><a href="#" id="btn-footer-supabase">إعدادات Supabase</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>خدمات المرضى</h4>
+                    <ul>
+                        <li><a href="#">حجز موعد أونلاين</a></li>
+                        <li><a href="#">إلغاء المواعيد بسهولة</a></li>
+                        <li><a href="#">تقييم الطبيب والعيادة</a></li>
+                        <li><a href="#">دليل أسعار الكشفية</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>تواصل معنا</h4>
+                    <p><i class="fa-solid fa-envelope"></i> contact@alhakeem-health.com</p>
+                    <p><i class="fa-solid fa-phone"></i> +213 (0) 550 12 34 56</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fa-brands fa-facebook"></i></a>
+                        <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#"><i class="fa-brands fa-whatsapp"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="container">
+                    <p>© 2026 منصة وتطبيق الحكيم - جميع الحقوق محفوظة | Supabase & GitHub Ready</p>
+                </div>
+            </div>
+        </footer>
+
+        <!-- MOBILE APP BOTTOM NAV (Visible only in Mobile App View) -->
+        <nav class="mobile-bottom-nav">
+            <a href="#" class="nav-item active" id="mob-nav-home">
+                <i class="fa-solid fa-house"></i>
+                <span>الرئيسية</span>
+            </a>
+            <a href="#doctors-directory" class="nav-item" id="mob-nav-search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <span>بحث</span>
+            </a>
+            <a href="#" class="nav-item" id="mob-nav-appointments">
+                <i class="fa-solid fa-calendar-check"></i>
+                <span>مواعيدي</span>
+            </a>
+            <a href="#" class="nav-item" id="btn-mob-join">
+                <i class="fa-solid fa-user-plus"></i>
+                <span>طبيب جديد</span>
+            </a>
+        </nav>
+
+    </div> <!-- End #app-wrapper -->
+
+
+    <!-- MODALS & POPUPS -->
+
+    <!-- 1. DOCTOR DETAIL MODAL -->
+    <div class="modal-overlay hidden" id="doctor-modal">
+        <div class="modal-card modal-lg">
+            <button class="modal-close-btn" id="close-doctor-modal"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-body" id="doctor-modal-body">
+                <!-- Dynamically filled by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. APPOINTMENT BOOKING MODAL -->
+    <div class="modal-overlay hidden" id="booking-modal">
+        <div class="modal-card">
+            <button class="modal-close-btn" id="close-booking-modal"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-calendar-plus"></i> حجز موعد معاينة</h2>
+                <p id="booking-doctor-name">د. اسم الطبيب</p>
+            </div>
+            <div class="modal-body">
+                <form id="booking-form">
+                    <div class="form-group">
+                        <label>اسم المريض الكامل *</label>
+                        <input type="text" id="book-patient-name" class="form-control" required placeholder="أدخل اسمك الكامل">
+                    </div>
+                    <div class="form-group">
+                        <label>رقم الهاتف للتأكيد *</label>
+                        <input type="tel" id="book-patient-phone" class="form-control" required placeholder="05XXXXXXXX">
+                    </div>
+                    <div class="form-group">
+                        <label>تاريخ الموعد المطلوب *</label>
+                        <input type="date" id="book-date" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>التوقيت المفضل *</label>
+                        <select id="book-time" class="form-control" required>
+                            <option value="09:00 صباحاً">09:00 صباحاً</option>
+                            <option value="10:30 صباحاً">10:30 صباحاً</option>
+                            <option value="11:30 صباحاً">11:30 صباحاً</option>
+                            <option value="02:00 مساءً">02:00 مساءً</option>
+                            <option value="03:30 مساءً">03:30 مساءً</option>
+                            <option value="05:00 مساءً">05:00 مساءً</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>سبب الزيارة / ملاحظات للملف الطبي</label>
+                        <textarea id="book-notes" class="form-control" rows="3" placeholder="أكتب باختصار سبب الفحص أو الألآم إن وجدت..."></textarea>
+                    </div>
+
+                    <div class="booking-summary-box">
+                        <div class="summary-row">
+                            <span>سعر الفحص عند الطبيب:</span>
+                            <strong id="book-price-display">0 د.ج</strong>
+                        </div>
+                        <div class="summary-row">
+                            <span>رسوم حجز المنصة:</span>
+                            <strong class="free-text">مجاناً (0 د.ج)</strong>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fa-solid fa-check-circle"></i> تأكيد حجز الموعد الآن
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. MY APPOINTMENTS & CANCELLATION MODAL -->
+    <div class="modal-overlay hidden" id="my-appointments-modal">
+        <div class="modal-card modal-lg">
+            <button class="modal-close-btn" id="close-my-appointments-modal"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-calendar-check"></i> سجل مواعيدي وحجوزاتي الطبية</h2>
+                <p>استعرض المواعيد المحجوزة أو قم بإلغاء موعد بنقرة واحدة وتزامن مع Supabase</p>
+            </div>
+            <div class="modal-body" id="my-appointments-body">
+                <!-- Dynamically populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. ADD REVIEW MODAL -->
+    <div class="modal-overlay hidden" id="review-modal">
+        <div class="modal-card">
+            <button class="modal-close-btn" id="close-review-modal"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-star"></i> إضافة تقييم ورأي حول الطبيب</h2>
+                <p id="review-doctor-name">د. اسم الطبيب</p>
+            </div>
+            <div class="modal-body">
+                <form id="review-form">
+                    <div class="form-group text-center">
+                        <label>اختر تقييمك بالطبيعة والتجربة (بالنجوم)</label>
+                        <div class="star-rating-input" id="star-rating-selector">
+                            <i class="fa-solid fa-star star-btn" data-value="1"></i>
+                            <i class="fa-solid fa-star star-btn" data-value="2"></i>
+                            <i class="fa-solid fa-star star-btn" data-value="3"></i>
+                            <i class="fa-solid fa-star star-btn" data-value="4"></i>
+                            <i class="fa-solid fa-star star-btn active" data-value="5"></i>
+                        </div>
+                        <input type="hidden" id="review-stars-val" value="5">
+                    </div>
+                    <div class="form-group">
+                        <label>اسمك الكريـم</label>
+                        <input type="text" id="review-author" class="form-control" placeholder="مثال: أحمد عبد الله (أو مجهول)" required>
+                    </div>
+                    <div class="form-group">
+                        <label>تفاصيل تجربتك ورأيك الصريح</label>
+                        <textarea id="review-comment" class="form-control" rows="4" placeholder="كيف كانت المعاملة؟ دقة المواعيد؟ التشخيص والشرح؟" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fa-solid fa-paper-plane"></i> نشر التقييم الآن
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. DOCTOR REGISTER MODAL -->
+    <div class="modal-overlay hidden" id="register-doctor-modal">
+        <div class="modal-card">
+            <button class="modal-close-btn" id="close-register-modal"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-user-plus"></i> انضمام طبيب جديد للمنصة</h2>
+                <p>سجّل عيادتك ليصلك آلاف المرضى يومياً</p>
+            </div>
+            <div class="modal-body">
+                <form id="register-doctor-form">
+                    <div class="form-group">
+                        <label>الاسم الكامل مع اللقب *</label>
+                        <input type="text" id="reg-name" class="form-control" placeholder="د. محمد الأمين" required>
+                    </div>
+                    <div class="form-group">
+                        <label>التخصص الطبي *</label>
+                        <select id="reg-specialty" class="form-control" required>
+                            <option value="طب عام">طب عام وشامل</option>
+                            <option value="طب الأطفال">طب الأطفال وحديثي الولادة</option>
+                            <option value="جراحة العظام">جراحة العظام والمفاصل</option>
+                            <option value="طب الأسنان">طب وجراحة الأسنان</option>
+                            <option value="طب وجراحة العيون">طب وجراحة العيون</option>
+                            <option value="الأمراض الجلدية">الأمراض الجلدية والتجميل</option>
+                            <option value="أمراض القلب">أمراض القلب والأوعية الدموية</option>
+                            <option value="النساء والتوليد">أمراض النساء والتوليد</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>المدينة / العنوان *</label>
+                        <input type="text" id="reg-city" class="form-control" placeholder="الجزائر العاصمة - حي حيدرة" required>
+                    </div>
+                    <div class="form-group">
+                        <label>سعر المعاينة الكشفية (د.ج) *</label>
+                        <input type="number" id="reg-price" class="form-control" placeholder="3000" min="500" step="100" required>
+                    </div>
+                    <div class="form-group">
+                        <label>سنوات الخبرة *</label>
+                        <input type="number" id="reg-experience" class="form-control" placeholder="10" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>رقم الهاتف للعيادة *</label>
+                        <input type="tel" id="reg-phone" class="form-control" placeholder="0550123456" required>
+                    </div>
+                    <div class="form-group">
+                        <label>نبذة عن الطبيب والشهادات</label>
+                        <textarea id="reg-bio" class="form-control" rows="3" placeholder="أدخل ملخص الخبرات والمستشفيات التابع لها..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fa-solid fa-check"></i> تسجيل وتفعيل الملف فوراً
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. SUPABASE CONNECTION CONFIG MODAL -->
+    <div class="modal-overlay hidden" id="supabase-modal">
+        <div class="modal-card">
+            <button class="modal-close-btn" id="close-supabase-modal"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-database"></i> إعدادات قاعدة بيانات Supabase</h2>
+                <p>ربط منصة الحكيم بقاعدة بياناتك السحابية الحية في Supabase</p>
+            </div>
+            <div class="modal-body">
+                <form id="supabase-config-form">
+                    <div class="form-group">
+                        <label>رابط مشروع Supabase (Project URL) *</label>
+                        <input type="url" id="sb-url-input" class="form-control" placeholder="https://xyzxyz.supabase.co" required>
+                    </div>
+                    <div class="form-group">
+                        <label>مفتاح API الخاص (Anon / Public Key) *</label>
+                        <input type="text" id="sb-key-input" class="form-control" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." required>
+                    </div>
+                    <div style="background:var(--primary-light); padding:1rem; border-radius:var(--radius-md); margin-bottom:1.25rem; font-size:0.85rem">
+                        <i class="fa-solid fa-info-circle"></i> يمكنك نسخ السكيمات من ملف <strong>supabase_schema.sql</strong> الموجود في المجلد ولصقها في Supabase SQL Editor لإنشاء الجداول بنقرة واحدة.
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fa-solid fa-plug"></i> حفظ وحفظ البيانات سحابياً
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION SYSTEM -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Custom JavaScript -->
+    <script src="app.js"></script>
+</body>
+</html>
