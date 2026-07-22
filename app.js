@@ -247,6 +247,132 @@ let doctorsData = [
         reviews: [
             { author: "الحاج أحمد", stars: 5, date: "قبل 3 أيام", comment: "طبيب يبعث الطمأنينة في قلب المريض." }
         ]
+    },
+    {
+        id: 4,
+        name: "د. أمينة حداد",
+        specialty: "طب الأطفال",
+        title: "أخصائية طب الأطفال وحديثي الولادة",
+        city: "عنابة",
+        address: "شارع ابن خلدون - مجمع الشفاء الطبي",
+        price: 2500,
+        currency: "د.ج",
+        experienceYears: 14,
+        phone: "+213 554 11 22 33",
+        workingHours: "السبت إلى الأربعاء (09:00 ص - 04:00 م)",
+        bio: "خبرة واسعة في متابعة نمو الأطفال وأمراض الحساسية والصدرية للرضع.",
+        rating: 4.9,
+        reviewsCount: 41,
+        gender: "female",
+        avatarBg: "#fef3c7",
+        reviews: [
+            { author: "سارة م.", stars: 5, date: "قبل أسبوع", comment: "معاملة راقية جداً مع الأطفال." }
+        ]
+    },
+    {
+        id: 5,
+        name: "د. محمد مهدي",
+        specialty: "طب الأسنان",
+        title: "جراح أسنان وأخصائي تقويم وزراعة الأسنان",
+        city: "سطيف",
+        address: "حي عين تبينت - بجانب صيدلية الأمل",
+        price: 2800,
+        currency: "د.ج",
+        experienceYears: 12,
+        phone: "+213 555 66 77 88",
+        workingHours: "الأحد إلى الخميس (09:00 ص - 05:30 م)",
+        bio: "عيادة مجهزة بأحدث تقنيات الليزر وزراعة الأسنان وتجميل الابتسامة.",
+        rating: 4.7,
+        reviewsCount: 29,
+        gender: "male",
+        avatarBg: "#e0e7ff",
+        reviews: [
+            { author: "رضوان ك.", stars: 5, date: "قبل 4 أيام", comment: "عمل نقي ودقيق جداً بدون ألم." }
+        ]
+    },
+    {
+        id: 6,
+        name: "د. ليلى زروقي",
+        specialty: "طب وجراحة العيون",
+        title: "أخصائية أمراض وجراحة العيون وعلاج المياه البيضاء والليزك",
+        city: "تلمسان",
+        address: "وسط المدينة - شارع أولوية التحرير",
+        price: 3200,
+        currency: "د.ج",
+        experienceYears: 15,
+        phone: "+213 556 99 88 77",
+        workingHours: "السبت إلى الأربعاء (08:30 ص - 03:30 م)",
+        bio: "متخصصة في جراحات العيون الدقيقة وفحص الشبكية بالكمبيوتر.",
+        rating: 4.9,
+        reviewsCount: 33,
+        gender: "female",
+        avatarBg: "#fce7f3",
+        reviews: [
+            { author: "فاطمة الزهراء", stars: 5, date: "قبل 5 أيام", comment: "تشخيص دقيق ومعاملة ممتازة." }
+        ]
+    },
+    {
+        id: 7,
+        name: "د. فاروق بوعلام",
+        specialty: "طب عام",
+        title: "طبيب عام واستشاري الطب الأسري ومتابعة الأمراض المزمنة",
+        city: "البليدة",
+        address: "حي باب السبت - العمارة B - الطابق الأول",
+        price: 2000,
+        currency: "د.ج",
+        experienceYears: 18,
+        phone: "+213 557 33 22 11",
+        workingHours: "السبت إلى الخميس (08:00 ص - 05:00 م)",
+        bio: "خبرة طويلة في متابعة مرضى السكري وضغط الدم والاستشارات الطبية العامة.",
+        rating: 4.8,
+        reviewsCount: 50,
+        gender: "male",
+        avatarBg: "#d1fae5",
+        reviews: [
+            { author: "عبد القادر ن.", stars: 5, date: "قبل أسبوعين", comment: "طبيب العائلة الممتاز." }
+        ]
+    },
+    {
+        id: 8,
+        name: "د. مريم أيت أحمد",
+        specialty: "النساء والتوليد",
+        title: "أخصائية أمراض النساء والتوليد والعقم وتأخر الحمل",
+        city: "تيزي وزو",
+        address: "حي Nouvelle Ville - عمارة الشفاء",
+        price: 3800,
+        currency: "د.ج",
+        experienceYears: 17,
+        phone: "+213 558 44 33 22",
+        workingHours: "السبت إلى الأربعاء (09:00 ص - 04:00 م)",
+        bio: "متابعة الحمل الخطر وإجراء عمليات التوليد بمركز الأمومة.",
+        rating: 5.0,
+        reviewsCount: 45,
+        gender: "female",
+        avatarBg: "#fbcfe8",
+        reviews: [
+            { author: "سميرة ك.", stars: 5, date: "قبل 3 أيام", comment: "دكتورة متفهمة ومحترفة للغاية." }
+        ]
+    },
+    {
+        id: 9,
+        name: "د. عمر قاسمي",
+        specialty: "جراحة العظام",
+        title: "أخصائي علاج إصابات الملعب وجراحة المفاصل",
+        city: "ورقلة",
+        address: "حي الشط - مقابل صيدلية الولاية",
+        price: 3000,
+        currency: "د.ج",
+        experienceYears: 10,
+        phone: "+213 559 12 34 56",
+        workingHours: "السبت إلى الخميس (08:30 ص - 04:30 م)",
+        bio: "متخصص في العلاج الفيزيائي وإصابات العظام والمفاصل.",
+        rating: 4.7,
+        reviewsCount: 22,
+        gender: "male",
+        avatarBg: "#e0f2fe",
+        reviews: [
+            { author: "خالد ص.", stars: 5, date: "قبل 6 أيام", comment: "علاج رائع ومتابعة ممتازة." }
+        ]
     }
 ];
 
