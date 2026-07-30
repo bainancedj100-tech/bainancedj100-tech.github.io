@@ -225,24 +225,29 @@
       <path d="M3.18.23l12.84 11.65-3.68 3.34L3.18.23z"/>
       <path d="M3.18 23.77l9.16-8.31 3.68 3.34L3.18 23.77z"/>
     </svg>
-    حمّل من Google Play
+    فتح في تطبيق Play Store
+  </a>
+
+  <a class="test-link" href="https://play.google.com/apps/test/RQk2dmmITgU/ahAO29uNRlyu2WStX1fBtBs8fYWm6ocBi8bO4VV0Hoc-7oBvhjzqL59x5t0nZsAAPgvo9Aki4XnKUVyIMjpcdpSx1x" target="_blank" style="display: block; margin-top: 14px; color: #FFD700; font-size: 13px; text-decoration: underline;">
+    سجل كمُختبر هنا أولاً (إذا لم تكن مسجلاً)
   </a>
 
   <!-- Shown only in Facebook/Instagram in-app browser -->
   <div class="open-browser-note" id="browserNote">
     <strong>⚠️ افتح في المتصفح</strong>
-    لفتح Google Play، اضغط على النقاط (⋮) في الأعلى واختر
-    <em>"فتح في المتصفح"</em> أو انسخ الرابط:
+    لفتح تطبيق Play Store، اضغط على النقاط (⋮) في الأعلى واختر
+    <em>"فتح في المتصفح"</em> أو انسخ رابط التسجيل:
     <br/>
-    <button class="copy-btn" onclick="copyLink()">📋 نسخ الرابط</button>
+    <button class="copy-btn" onclick="copyLink()">📋 نسخ رابط التسجيل</button>
   </div>
 
   <p class="footer">Tawssil Tiaret © 2026 — KHALED TOP</p>
 </div>
 
 <script>
-  const PLAY_URL   = 'https://play.google.com/apps/test/RQk2dmmITgU/ahAO29uNRlyu2WStX1fBtBs8fYWm6ocBi8bO4VV0Hoc-7oBvhjzqL59x5t0nZsAAPgvo9Aki4XnKUVyIMjpcdpSx1x';
-  const INTENT_URL = 'intent://play.google.com/apps/test/RQk2dmmITgU/ahAO29uNRlyu2WStX1fBtBs8fYWm6ocBi8bO4VV0Hoc-7oBvhjzqL59x5t0nZsAAPgvo9Aki4XnKUVyIMjpcdpSx1x#Intent;scheme=https;action=android.intent.action.VIEW;end;';
+  const PLAY_URL   = 'https://play.google.com/store/apps/details?id=com.surplace.app';
+  const INTENT_URL = 'intent://details?id=com.surplace.app#Intent;scheme=market;package=com.android.vending;end;';
+  const TEST_URL   = 'https://play.google.com/apps/test/RQk2dmmITgU/ahAO29uNRlyu2WStX1fBtBs8fYWm6ocBi8bO4VV0Hoc-7oBvhjzqL59x5t0nZsAAPgvo9Aki4XnKUVyIMjpcdpSx1x';
 
   // Detect Facebook / Instagram / any in-app browser
   function isInAppBrowser() {
@@ -250,21 +255,15 @@
     return /FBAN|FBAV|FBDV|Instagram|FB_IAB|FBIOS|FB4A|Messenger|LinkedInApp|Twitter|Snapchat|TikTok|Pinterest/i.test(ua);
   }
 
-  // Try to open Play Store app or default external browser
+  // Try to open Play Store app directly
   function openPlayStore(e) {
     e.preventDefault();
     const isAndroid = /android/i.test(navigator.userAgent);
 
     if (isInAppBrowser()) {
       if (isAndroid) {
-        // Try to force break out of Facebook WebView to the default browser
+        // Open Play Store app directly bypassing webview
         window.location.href = INTENT_URL;
-        
-        // Show the manual note as a fallback after 1 second in case it fails
-        setTimeout(function() {
-          document.getElementById('browserNote').style.display = 'block';
-          document.getElementById('browserNote').scrollIntoView({ behavior: 'smooth' });
-        }, 1000);
       } else {
         // iOS or others: Show the manual copy helper
         document.getElementById('browserNote').style.display = 'block';
@@ -274,7 +273,7 @@
     }
 
     if (isAndroid) {
-      window.location.href = PLAY_URL;
+      window.location.href = INTENT_URL;
     } else {
       window.open(PLAY_URL, '_blank');
     }
