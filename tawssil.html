@@ -218,7 +218,7 @@
     </div>
   </div>
 
-  <a class="btn-play" id="playBtn" href="https://play.google.com/store/apps/details?id=com.surplace.app" target="_blank">
+  <a class="btn-play" id="playBtn" href="#" onclick="openPlayStore(event)">
     <svg viewBox="0 0 24 24" fill="currentColor">
       <path d="M3.18 23.77C3.06 23.7 3 23.56 3 23.37V.63C3 .44 3.06.3 3.18.23L3.25.2l12.76 11.6v.4L3.25 23.8l-.07-.03z"/>
       <path d="M20.23 15.83l-3.29-1.88-3.68 3.34 3.68 3.34 3.3-1.88a1.88 1.88 0 000-2.92z"/>
@@ -241,42 +241,64 @@
 </div>
 
 <script>
-  const PLAY_URL = 'https://play.google.com/store/apps/details?id=com.surplace.app';
+  const PLAY_URL  = 'https://play.google.com/store/apps/details?id=com.surplace.app';
+  const MARKET_URL = 'market://details?id=com.surplace.app';
 
-  // Detect Facebook / Instagram in-app browser
+  // Detect Facebook / Instagram / any in-app browser
   function isInAppBrowser() {
     const ua = navigator.userAgent || '';
-    return /FBAN|FBAV|Instagram|FB_IAB|FBIOS|FB4A/i.test(ua);
+    return /FBAN|FBAV|FBDV|Instagram|FB_IAB|FBIOS|FB4A|Messenger|LinkedInApp|Twitter|Snapchat|TikTok|Pinterest/i.test(ua);
+  }
+
+  // Try to open Play Store app via market:// then fallback to web
+  function openPlayStore(e) {
+    e.preventDefault();
+
+    if (isInAppBrowser()) {
+      // Can't open external apps from in-app browser — show instructions
+      document.getElementById('browserNote').style.display = 'block';
+      document.getElementById('browserNote').scrollIntoView({ behavior: 'smooth' });
+      return;
+    }
+
+    // Try market:// (opens Play Store app directly on Android)
+    const isAndroid = /android/i.test(navigator.userAgent);
+    if (isAndroid) {
+      // Use iframe trick to try market:// without navigation error
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.src = MARKET_URL;
+      document.body.appendChild(iframe);
+      // Fallback to web after short delay
+      setTimeout(function () {
+        document.body.removeChild(iframe);
+        window.location.href = PLAY_URL;
+      }, 1500);
+    } else {
+      // iOS or desktop — open web URL
+      window.open(PLAY_URL, '_blank');
+    }
   }
 
   window.addEventListener('DOMContentLoaded', function () {
     if (isInAppBrowser()) {
-      // Show manual instruction note
       document.getElementById('browserNote').style.display = 'block';
-      // Change button to copy instead of navigate
-      const btn = document.getElementById('playBtn');
-      btn.href = '#';
-      btn.addEventListener('click', function(e) {
-        e.preventDefault();
-        copyLink();
-      });
     }
   });
 
   function copyLink() {
     if (navigator.clipboard) {
       navigator.clipboard.writeText(PLAY_URL).then(function () {
-        alert('✅ تم نسخ الرابط!\nافتح متصفحك والصق الرابط.');
+        alert('✅ تم نسخ الرابط!\nافتح متصفحك (Chrome) والصق الرابط.');
       });
     } else {
-      // Fallback
       const el = document.createElement('textarea');
       el.value = PLAY_URL;
       document.body.appendChild(el);
       el.select();
       document.execCommand('copy');
       document.body.removeChild(el);
-      alert('✅ تم نسخ الرابط!\nافتح متصفحك والصق الرابط.');
+      alert('✅ تم نسخ الرابط!\nافتح متصفحك (Chrome) والصق الرابط.');
     }
   }
 </script>
