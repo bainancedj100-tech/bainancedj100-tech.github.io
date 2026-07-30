@@ -241,8 +241,8 @@
 </div>
 
 <script>
-  const PLAY_URL  = 'https://play.google.com/apps/test/RQk2dmmITgU/ahAO29uNRlyu2WStX1fBtBs8fYWm6ocBi8bO4VV0Hoc-7oBvhjzqL59x5t0nZsAAPgvo9Aki4XnKUVyIMjpcdpSx1x';
-  const MARKET_URL = 'https://play.google.com/apps/test/RQk2dmmITgU/ahAO29uNRlyu2WStX1fBtBs8fYWm6ocBi8bO4VV0Hoc-7oBvhjzqL59x5t0nZsAAPgvo9Aki4XnKUVyIMjpcdpSx1x';
+  const PLAY_URL   = 'https://play.google.com/apps/test/RQk2dmmITgU/ahAO29uNRlyu2WStX1fBtBs8fYWm6ocBi8bO4VV0Hoc-7oBvhjzqL59x5t0nZsAAPgvo9Aki4XnKUVyIMjpcdpSx1x';
+  const INTENT_URL = 'intent://play.google.com/apps/test/RQk2dmmITgU/ahAO29uNRlyu2WStX1fBtBs8fYWm6ocBi8bO4VV0Hoc-7oBvhjzqL59x5t0nZsAAPgvo9Aki4XnKUVyIMjpcdpSx1x#Intent;scheme=https;action=android.intent.action.VIEW;end;';
 
   // Detect Facebook / Instagram / any in-app browser
   function isInAppBrowser() {
@@ -250,32 +250,32 @@
     return /FBAN|FBAV|FBDV|Instagram|FB_IAB|FBIOS|FB4A|Messenger|LinkedInApp|Twitter|Snapchat|TikTok|Pinterest/i.test(ua);
   }
 
-  // Try to open Play Store app via market:// then fallback to web
+  // Try to open Play Store app or default external browser
   function openPlayStore(e) {
     e.preventDefault();
+    const isAndroid = /android/i.test(navigator.userAgent);
 
     if (isInAppBrowser()) {
-      // Can't open external apps from in-app browser — show instructions
-      document.getElementById('browserNote').style.display = 'block';
-      document.getElementById('browserNote').scrollIntoView({ behavior: 'smooth' });
+      if (isAndroid) {
+        // Try to force break out of Facebook WebView to the default browser
+        window.location.href = INTENT_URL;
+        
+        // Show the manual note as a fallback after 1 second in case it fails
+        setTimeout(function() {
+          document.getElementById('browserNote').style.display = 'block';
+          document.getElementById('browserNote').scrollIntoView({ behavior: 'smooth' });
+        }, 1000);
+      } else {
+        // iOS or others: Show the manual copy helper
+        document.getElementById('browserNote').style.display = 'block';
+        document.getElementById('browserNote').scrollIntoView({ behavior: 'smooth' });
+      }
       return;
     }
 
-    // Try market:// (opens Play Store app directly on Android)
-    const isAndroid = /android/i.test(navigator.userAgent);
     if (isAndroid) {
-      // Use iframe trick to try market:// without navigation error
-      const iframe = document.createElement('iframe');
-      iframe.style.display = 'none';
-      iframe.src = MARKET_URL;
-      document.body.appendChild(iframe);
-      // Fallback to web after short delay
-      setTimeout(function () {
-        document.body.removeChild(iframe);
-        window.location.href = PLAY_URL;
-      }, 1500);
+      window.location.href = PLAY_URL;
     } else {
-      // iOS or desktop — open web URL
       window.open(PLAY_URL, '_blank');
     }
   }
